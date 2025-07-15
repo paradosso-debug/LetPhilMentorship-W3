@@ -26,6 +26,19 @@ let timerDisplay = document.getElementById("timer");
 let finalScoreEl = document.getElementById("final-score");
 let resultMsgEl = document.getElementById("result-message");
 
+// console.log("DOM elements loaded:", {
+//   startScreen,
+//   questionScreen,
+//   resultScreen,
+//   startBtn,
+//   restartBtn,
+//   questionText,
+//   answersDiv,
+//   timerDisplay,
+//   finalScoreEl,
+//   resultMsgEl,
+// });
+
 /* 
 STEP 2: CREATE QUIZ QUESTIONS ARRAY
 Create a variable called `questions` that stores an array of objects.
@@ -66,6 +79,8 @@ let questions = [
   },
 ];
 
+// console.log("Loaded quiz data:", questions);
+
 /* 
 STEP 3: DEFINE STATE VARIABLES
 You will need:
@@ -79,7 +94,8 @@ let currentIndex = 0;
 let score = 0;
 let timeLeft = 10;
 let timerId = null;
-
+// console.log(currentIndex);
+// console.log("intial state:", { currentIndex, score, timeLeft, timerId });
 /* 
 STEP 4: ADD EVENT LISTENERS
 Use `.addEventListener("click", ...)` on:
@@ -89,6 +105,17 @@ Use `.addEventListener("click", ...)` on:
 
 startBtn.addEventListener("click", startGame);
 restartBtn.addEventListener("click", startGame);
+console.log("This works");
+
+function startGame() {
+  console.log("Start game");
+  currentIndex = 0;
+  score = 0;
+  swapScreen(startScreen, questionScreen);
+  showQuestion();
+}
+
+console.log({ currentIndex, score });
 
 /* 
 STEP 5: FUNCTION – startGame()
@@ -97,12 +124,6 @@ Create a function named `startGame` that:
 - Switches from the start screen to the question screen
 - Calls the `showQuestion()` function
 */
-
-const startGame = () => {
-  currentIndex = 0;
-  swapScreen(startScreen, questionScreen);
-  showQuestion();
-};
 
 /* 
 STEP 6: FUNCTION – showQuestion()
@@ -139,6 +160,7 @@ const showQuestion = () => {
   resetTimer();
 };
 
+console.log(`q.question + 1`, q.question);
 /* 
 STEP 7: FUNCTION – handleAnswer()
 Create a function named `handleAnswer` that:
@@ -153,6 +175,38 @@ Create a function named `handleAnswer` that:
     - If there are more questions, call `showQuestion()`
     - If quiz is over, call `showResults()`
 */
+
+function handleAnswer(e) {
+  clearInterval(timerId);
+
+  const chosenIdx = Number(e.target.dataset.index);
+  const q = questions[currentIndex];
+  const buttons = document.querySelectorAll(".answer-btn");
+
+  buttons.forEach((btn) => {
+    const idx = Number(btn.dataset.index);
+
+    if (chosenIdx === -1) {
+      if (idx === q.correct) btn.classList.add("correct");
+    } else {
+      if (idx === q.correct) btn.classList.add("correct");
+      else if (idx === chosenIdx) btn.classList.add("wrong");
+    }
+    btn.disabled = true;
+  });
+
+  if (chosenIdx === q.correct) {
+    score++;
+  }
+
+  setTimeout(() => {
+    if (currentIndex < questions.length) {
+      showQuestion();
+    } else {
+      showResults();
+    }
+  }, 1200);
+}
 
 /* 
 STEP 8: FUNCTION – showResults()
