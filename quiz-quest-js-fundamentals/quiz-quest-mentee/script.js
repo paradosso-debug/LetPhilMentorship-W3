@@ -111,11 +111,11 @@ function startGame() {
   console.log("Start game");
   currentIndex = 0;
   score = 0;
+  console.log("game started or restarted");
   swapScreen(startScreen, questionScreen);
+  console.log("swapped to question screen");
   showQuestion();
 }
-
-console.log({ currentIndex, score });
 
 /* 
 STEP 5: FUNCTION – startGame()
@@ -142,7 +142,7 @@ Create a function named `showQuestion` that:
 
 const showQuestion = () => {
   answersDiv.innerHTML = "";
-  let q = questions[currentIndex];
+  const q = questions[currentIndex];
   questionText.textContent = q.question;
 
   q.answers.forEach((answer, i) => {
@@ -160,7 +160,6 @@ const showQuestion = () => {
   resetTimer();
 };
 
-console.log(`q.question + 1`, q.question);
 /* 
 STEP 7: FUNCTION – handleAnswer()
 Create a function named `handleAnswer` that:
@@ -179,7 +178,13 @@ Create a function named `handleAnswer` that:
 function handleAnswer(e) {
   clearInterval(timerId);
 
+  //Getting the index of the chosen answer by the user
   const chosenIdx = Number(e.target.dataset.index);
+
+  // <button data-index="0"><button/>
+  // <button data-index="1"><button/>
+  // <button data-index="2"><button/>
+
   const q = questions[currentIndex];
   const buttons = document.querySelectorAll(".answer-btn");
 
@@ -219,6 +224,19 @@ Create a function named `showResults` that:
     - Less than half → “💀 Novice – Study the ancient scrolls again!”
 */
 
+function showResults() {
+  swapScreen(questionScreen, resultScreen);
+
+  finalScoreEl.textContent = ` You scored ${score} / ${questions.length}`;
+  if (score === questions.length) {
+    resultMsgEl.textContent = "Supreme Wizard of JavaScript!✨";
+  } else if (score >= questions.length / 2) {
+    resultMsgEl.textContent = "🧙 Apprentice Mage – Keep Practicing!";
+  } else {
+    resultMsgEl.textContent = "💀 Novice – Study the ancient scrolls again!";
+  }
+}
+
 /* 
 STEP 9: FUNCTION – resetTimer()
 Create a function named `resetTimer` that:
@@ -230,9 +248,32 @@ Create a function named `resetTimer` that:
       (use: { target: { dataset: { index: -1 } } })
 */
 
+function resetTimer() {
+  timeLeft = 10;
+  timerDisplay.textContent = timeLeft;
+  clearInterval(timerId);
+
+  timerId = setInterval(() => {
+    timeLeft--;
+    timerDisplay.textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      handleAnswer({ target: { dataset: { index: -1 } } });
+    }
+  }, 1000);
+}
+
 /* 
 STEP 10: FUNCTION – swapScreen()
 Create a function named `swapScreen(hideEl, showEl)` that:
 - Hides all elements with the class `.screen` using `classList.add("hidden")`
 - Shows the element passed as `showEl` using `classList.remove("hidden")`
 */
+
+function swapScreen(_, showEl) {
+  const allScreens = document.querySelectorAll(".screen");
+  allScreens.forEach((screen) => screen.classList.add("hidden"));
+
+  showEl.classList.remove("hidden");
+}
