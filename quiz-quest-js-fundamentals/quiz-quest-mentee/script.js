@@ -26,18 +26,18 @@ let timerDisplay = document.getElementById("timer");
 let finalScoreEl = document.getElementById("final-score");
 let resultMsgEl = document.getElementById("result-message");
 
-// console.log("DOM elements loaded:", {
-//   startScreen,
-//   questionScreen,
-//   resultScreen,
-//   startBtn,
-//   restartBtn,
-//   questionText,
-//   answersDiv,
-//   timerDisplay,
-//   finalScoreEl,
-//   resultMsgEl,
-// });
+console.log(" DOM elements loaded:", {
+  startScreen,
+  questionScreen,
+  resultScreen,
+  startBtn,
+  restartBtn,
+  questionText,
+  answersDiv,
+  timerDisplay,
+  finalScoreEl,
+  resultMsgEl,
+});
 
 /* 
 STEP 2: CREATE QUIZ QUESTIONS ARRAY
@@ -79,7 +79,7 @@ let questions = [
   },
 ];
 
-// console.log("Loaded quiz data:", questions);
+console.log(" Loaded quiz data:", questions);
 
 /* 
 STEP 3: DEFINE STATE VARIABLES
@@ -94,8 +94,14 @@ let currentIndex = 0;
 let score = 0;
 let timeLeft = 10;
 let timerId = null;
-// console.log(currentIndex);
-// console.log("intial state:", { currentIndex, score, timeLeft, timerId });
+
+console.log(" Initial state set:", {
+  currentIndex,
+  score,
+  timeLeft,
+  timerId,
+});
+
 /* 
 STEP 4: ADD EVENT LISTENERS
 Use `.addEventListener("click", ...)` on:
@@ -105,17 +111,7 @@ Use `.addEventListener("click", ...)` on:
 
 startBtn.addEventListener("click", startGame);
 restartBtn.addEventListener("click", startGame);
-console.log("This works");
-
-function startGame() {
-  console.log("Start game");
-  currentIndex = 0;
-  score = 0;
-  console.log("game started or restarted");
-  swapScreen(startScreen, questionScreen);
-  console.log("swapped to question screen");
-  showQuestion();
-}
+console.log(" Event listeners attached");
 
 /* 
 STEP 5: FUNCTION – startGame()
@@ -124,6 +120,16 @@ Create a function named `startGame` that:
 - Switches from the start screen to the question screen
 - Calls the `showQuestion()` function
 */
+
+function startGame() {
+  console.log(" startGame() called");
+  currentIndex = 0;
+  score = 0;
+  console.log("Game state reset:", { currentIndex, score });
+  swapScreen(startScreen, questionScreen);
+  console.log(" Switched to question screen");
+  showQuestion();
+}
 
 /* 
 STEP 6: FUNCTION – showQuestion()
@@ -144,19 +150,20 @@ const showQuestion = () => {
   answersDiv.innerHTML = "";
   const q = questions[currentIndex];
   questionText.textContent = q.question;
+  console.log(` Showing question ${currentIndex + 1}:`, q.question);
 
   q.answers.forEach((answer, i) => {
     let button = document.createElement("button");
-    button.ClassName = "answer-btn";
+    button.className = "answer-btn";
     button.textContent = answer;
     button.dataset.index = i;
-
     button.setAttribute("role", "button");
-    button.setAttribute("tab-index", "0");
-
+    button.setAttribute("tabindex", "0");
     button.addEventListener("click", handleAnswer);
     answersDiv.appendChild(button);
+    console.log(` Added answer button ${i}:`, answer);
   });
+
   resetTimer();
 };
 
@@ -177,20 +184,16 @@ Create a function named `handleAnswer` that:
 
 function handleAnswer(e) {
   clearInterval(timerId);
+  console.log("⏹Timer stopped");
 
-  //Getting the index of the chosen answer by the user
   const chosenIdx = Number(e.target.dataset.index);
-
-  // <button data-index="0"><button/>
-  // <button data-index="1"><button/>
-  // <button data-index="2"><button/>
-
   const q = questions[currentIndex];
   const buttons = document.querySelectorAll(".answer-btn");
 
+  console.log("Selected answer:", chosenIdx, "| Correct answer:", q.correct);
+
   buttons.forEach((btn) => {
     const idx = Number(btn.dataset.index);
-
     if (chosenIdx === -1) {
       if (idx === q.correct) btn.classList.add("correct");
     } else {
@@ -202,9 +205,14 @@ function handleAnswer(e) {
 
   if (chosenIdx === q.correct) {
     score++;
+    console.log("🎉 Correct! Score is now:", score);
+  } else {
+    console.log("❌ Wrong answer.");
   }
 
   setTimeout(() => {
+    currentIndex++;
+    console.log("➡️ Moving to next question index:", currentIndex);
     if (currentIndex < questions.length) {
       showQuestion();
     } else {
@@ -225,9 +233,11 @@ Create a function named `showResults` that:
 */
 
 function showResults() {
+  console.log("🏁 Showing results");
   swapScreen(questionScreen, resultScreen);
-
   finalScoreEl.textContent = ` You scored ${score} / ${questions.length}`;
+  console.log("📊 Final score:", score);
+
   if (score === questions.length) {
     resultMsgEl.textContent = "Supreme Wizard of JavaScript!✨";
   } else if (score >= questions.length / 2) {
@@ -252,13 +262,14 @@ function resetTimer() {
   timeLeft = 10;
   timerDisplay.textContent = timeLeft;
   clearInterval(timerId);
+  console.log("⏱Timer reset to 10 seconds");
 
   timerId = setInterval(() => {
     timeLeft--;
     timerDisplay.textContent = timeLeft;
-
     if (timeLeft <= 0) {
       clearInterval(timerId);
+      console.log(" Time ran out – auto-submitting no answer");
       handleAnswer({ target: { dataset: { index: -1 } } });
     }
   }, 1000);
@@ -274,6 +285,6 @@ Create a function named `swapScreen(hideEl, showEl)` that:
 function swapScreen(_, showEl) {
   const allScreens = document.querySelectorAll(".screen");
   allScreens.forEach((screen) => screen.classList.add("hidden"));
-
   showEl.classList.remove("hidden");
+  console.log(" Switched to screen:", showEl.id);
 }
