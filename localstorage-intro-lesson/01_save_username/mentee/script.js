@@ -4,12 +4,31 @@
 // - the button the user clicks to save their name (id="saveBtn")
 // - the element where we will display the saved name (id="userDisplay")
 
+const input = document.getElementById("nameInput");
+const button = document.getElementById("saveBtn");
+const name = document.getElementById("userDisplay");
+
 // 💾 STEP 2: LOAD SAVED NAME ON PAGE LOAD
 // When the page loads, we check if there's a saved name in localStorage using getItem()
 // If there is a name, we update the display element's textContent to show that name
+
+const savedName = localStorage.getItem("username");
+if (savedName) {
+  name.textContent = savedName;
+}
 
 // 🎯 STEP 3: ADD A CLICK EVENT TO THE BUTTON
 // When the user clicks the button:
 // - we get the value they typed in the input
 // - we save that value to localStorage with the key "username"
 // - we update the display on the page with the name
+
+button.addEventListener("click", () => {
+  const getValue = input.value;
+  localStorage.setItem("username", getValue);
+  name.textContent = getValue;
+});
+
+// const savedName = localStorage.getItem("username");
+// if (savedName) {
+//   name.textContent = savedName;

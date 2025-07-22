@@ -17,6 +17,12 @@
     <!-- ✅ STEP 5: Create a container to wrap the app UI
        - This keeps the layout organized and centers content
        - The class "container" is referenced for styling if needed -->
+    <div class="container">
+      <input type="text" id="nameInput" placeholder="Type your name" />
+
+      <button id="saveBtn">Save Name</button>
+      <p id="userDisplay"></p>
+    </div>
 
     <!-- ✅ STEP 6: Add a text input where the user will type their name
          - <input> lets the user type something
@@ -37,5 +43,6 @@
     <!-- ✅ STEP 9: Link to the external JavaScript file
        - Placing it at the end ensures the HTML loads first
        - src="script.js" connects to your logic for saving/displaying the name -->
+    <script src="script.js"></script>
   </body>
 </html>
