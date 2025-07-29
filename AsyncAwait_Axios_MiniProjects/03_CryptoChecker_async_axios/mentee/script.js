@@ -4,6 +4,10 @@
 // Button the user clicks to check price
 // Where we show the result
 
+const dropDown = document.getElementById("cryptoSelect");
+const checkBtn = document.getElementById("checkBtn");
+const priceDisplay = document.getElementById("priceDisplay");
+
 // 🧠 STEP 2: Add a click event listener to the button
 // - When the user clicks the button, we start the async function
 
@@ -23,3 +27,18 @@
 // - We use backticks and ${} to insert dynamic values
 
 // 🧠 STEP 8: Show an error message if the fetch fails
+
+checkBtn.addEventListener("click", async () => {
+  const crypto = dropDown.value;
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${crypto}&vs_currencies=usd`;
+  try {
+    const response = await axios.get(url);
+    if (!response.data[crypto] || !response.data[crypto].usd) {
+      throw new Error("Something went wrong");
+    }
+    const price = response.data[crypto].usd;
+    priceDisplay.innerHTML = `<h2>${crypto.toUpperCase()}</h2> <p>current Price $${price}</p>`;
+  } catch (error) {
+    priceDisplay.innerHTML = `<h2> Failed: ${error.message}</h2>`;
+  }
+});
