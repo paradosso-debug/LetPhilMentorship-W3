@@ -71,14 +71,53 @@ async function postData() {
 // Replace user with ID 1
 // Display the returned updated user object in the output area
 
+async function putData() {
+  try {
+    const response = await axios.put(url + "/1", {
+      name: "finn",
+      email: "hello2@gmail.com",
+    });
+    output.textContent = JSON.stringify(response.data, null, 2);
+  } catch (err) {
+    output.textContent = err.message;
+  }
+}
+
 // 🔹 Function: patchData()
 // Use axios.patch() to partially update a user (only send the email field)
 // Update user with ID 1 and display the new info in the output area
 
+async function patchData() {
+  try {
+    const response = await axios.patch(url + "/1", {
+      email: "hello3@gmail.com",
+    });
+    output.textContent = JSON.stringify(response.data, null, 2);
+  } catch (err) {
+    output.textContent = err.message;
+  }
+}
+
 // 🔹 Function: deleteData()
 // Use axios.delete() to pretend to delete user with ID 1
 // Show the empty object response {} from the fake API
+async function deleteData() {
+  try {
+    const response = await axios.delete(url + "/1");
+    output.textContent = JSON.stringify(response.data, null, 2);
+  } catch (err) {
+    output.textContent = err.message;
+  }
+}
 
 // 🔹 Function: headData()
 // Use axios.head() to get only the headers (not the data)
+async function headData() {
+  try {
+    const response = await axios.head(url);
+    output.textContent = JSON.stringify(response.headers, null, 2);
+  } catch (err) {
+    output.textContent = err.message;
+  }
+}
 // Display the headers (res.headers) in the output area
