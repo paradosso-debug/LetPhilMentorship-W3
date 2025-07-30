@@ -15,7 +15,7 @@
 
 // 🧠 STEP 4: Build the API URL
 // - We insert the country name into the REST Countries API URL using a template literal (`...`)
-// - Example result: https://restcountries.com/v3.1/name/mexico
+// - Example result: https://restcountries.com/v3.1/name/mexico\
 
 // 🧠 STEP 5: Use axios to fetch data from the API
 // - `axios.get(url)` sends a GET request to the API and returns a Promise
@@ -35,3 +35,29 @@
 
 // 🧠 STEP 8: If something goes wrong (e.g., country not found), show an error message
 // - The error might be because the country doesn't exist or the API is down
+
+const countryInput = document.getElementById("countryInput");
+const searchBtn = document.getElementById("searchBtn");
+const countryDisplay = document.getElementById("countryDisplay");
+
+searchBtn.addEventListener("click", async () => {
+  const country = countryInput.value.trim();
+  const url = `https://restcountries.com/v3.1/name/${country}`;
+  try {
+    const response = await axios.get(url);
+    const data = response.data[0];
+    const countryName = data.name.common;
+    const capital = data.capital[0];
+    const population = data.population.toLocaleString();
+    const flags = data.flags.svg;
+
+    countryDisplay.innerHTML = `<img src="${flags}" alt="${countryName} Flag" style="width:100px" />
+      <h2>${countryName}</h2>
+      <p><strong>Capital: </strong>${capital}</p>
+      <p><strong>Population: </strong>${population}</p>`;
+  } catch (err) {
+    countryDisplay.innerHTML =
+      "<p>Sorry, the country does not exist. Pls try again.</p>";
+    console.error("404", err);
+  }
+});
