@@ -4,8 +4,13 @@
 //   • Key: baseURL
 //   • Value: "https://coinbase.com/api/v2/assets/prices"
 
+const api = axios.create({
+  baseURL: "https://coinbase.com/api/v2/assets/prices",
+});
+
 // 🧠 STEP 2: Make an array called "coins"
 // - Store the IDs of the cryptocurrencies you want to track (e.g., "bitcoin", "ethereum").
+const coins = ["bitcoin", "ethereum"];
 
 // 🧠 STEP 3: Write a function called "createChart"
 // - Parameters: (Chart, coinId, labels, data, symbol)
@@ -16,6 +21,31 @@
 //   4. Use new Chart(canvas, {...}) to create a line chart.
 //   5. Pass in labels (X-axis) and data (Y-axis) from the API response.
 //   6. Use symbol for the dataset label and give it a color (e.g., blue).
+
+function createChart(Chart, coinId, labels, data, symbol) {
+  const chartSection = document.getElementById("chartSection");
+  const canvas = document.createElement("canvas");
+  canvas.id = coinId;
+  chartSection.append(canvas);
+
+  new Chart(canvas, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: `${symbol}, Amount`,
+          data: data,
+          borderColor: "blue",
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderWidth: 2,
+          fill: true,
+        },
+      ],
+    },
+    options: { responsive: true },
+  });
+}
 
 // 🧠 STEP 4: Write an async function called "makeCharts"
 // - Inside this function:
@@ -30,8 +60,53 @@
 //   4. After fetching all data, clear the loader (innerHTML = "").
 //   5. Loop over the returned data with forEach() and call createChart() for each coin.
 
+async function makeCharts() {
+  const chartSection = document.getElementById("chartSection");
+  chartSection.innerHTML = "<div class='loader'></div>";
+  const responses = await Promise.all(
+    coins.map(async (coin) => {
+      const response = await api.get(`/${coin}`);
+      const prices = response.data.data.prices.hour.prices.slice(0, 24);
+
+      const labels = prices.map((_, timestamp) =>
+        new Date(timestamp * 1000).toLocaleTimeString()
+      );
+
+      const data = prices.map(([price]) => Number(price));
+      return { coinId: coin, labels, data, symbol: response.data.data.base };
+
+      // const response = await api.get("/" + coin);
+      //   const data = response.data.data.prices.hour.prices.slice(0, 24);
+      //   // console.log(data);
+
+      //   let chartData = { coinId: coin, labels: [], data: [], symbol: response.data.data.base};
+
+      //   data.map(([timestamp, price]) => {
+      //     chartData.labels.push(new Date(timestamp *1000).toLocaleTimeString());
+      //     chartData.data.push(Number(price));
+      //   });
+
+      // return chartData;
+    })
+  );
+
+  chartSection.innerHTML = "";
+  responses.forEach((res) =>
+    createChart(Chart, res.coinId, res.labels, res.data, res.symbol)
+  );
+}
+
+// {
+//   coinId: "BTC",
+//   labels: ["10:00", "11:00", "12:00", ...], // times
+//   data: [28500, 28600, 28750, ...],         // prices
+//   symbol: "BTC"
+// }
+
 // 🧠 STEP 5: Call makeCharts() once to display charts immediately.
 // - Use setInterval(makeCharts, 10000) to refresh every 10 seconds (10,000ms).
+makeCharts();
+setInterval(makeCharts, 10000);
 
 // ✅ IMPORTANT:
 // - Use the given variable names exactly: api, coins, createChart, makeCharts.
